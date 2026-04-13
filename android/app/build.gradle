@@ -1,0 +1,61 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace "com.example.campus_swap"
+    compileSdk 36
+    ndkVersion "28.2.13676358"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId "com.example.campus_swap"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 36
+        versionCode flutter.versionCode
+        versionName flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    // Explicitly add Flutter engine and plugins because the Gradle plugin is failing to resolve them.
+    def flutter_engine_version = "1.0.0-425cfb54d01a9472b3e81d9e76fd63a4a44cfbcb"
+    debugImplementation "io.flutter:flutter_embedding_debug:$flutter_engine_version"
+    releaseImplementation "io.flutter:flutter_embedding_release:$flutter_engine_version"
+    profileImplementation "io.flutter:flutter_embedding_profile:$flutter_engine_version"
+
+    // Dynamically add plugin projects as dependencies
+    def pluginsFile = rootProject.file('../.flutter-plugins-dependencies')
+    if (pluginsFile.exists()) {
+        def json = new groovy.json.JsonSlurper().parseText(pluginsFile.text)
+        json.plugins.android.each { plugin ->
+            if (plugin.native_build) {
+                implementation project(":${plugin.name}")
+            }
+        }
+    }
+}

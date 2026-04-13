@@ -1,7 +1,0 @@
-com.example.campus_swap.app-debug-0 C:\Users\Asus\OneDrive\Documents\GitHub\Campus-Swap\campus_swap\android\app\src\debug\res
-com.example.campus_swap.app-main-1 C:\Users\Asus\OneDrive\Documents\GitHub\Campus-Swap\campus_swap\android\app\src\main\res
-com.example.campus_swap.app-pngs-2 C:\Users\Asus\OneDrive\Documents\GitHub\Campus-Swap\campus_swap\build\app\generated\res\pngs\debug
-com.example.campus_swap.app-resValues-3 C:\Users\Asus\OneDrive\Documents\GitHub\Campus-Swap\campus_swap\build\app\generated\res\resValues\debug
-com.example.campus_swap.app-packageDebugResources-4 C:\Users\Asus\OneDrive\Documents\GitHub\Campus-Swap\campus_swap\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.example.campus_swap.app-packageDebugResources-5 C:\Users\Asus\OneDrive\Documents\GitHub\Campus-Swap\campus_swap\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.example.campus_swap.app-debug-6 C:\Users\Asus\OneDrive\Documents\GitHub\Campus-Swap\campus_swap\build\app\intermediates\merged_res\debug\mergeDebugResources
