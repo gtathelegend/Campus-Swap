@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter --version)",
+      "Bash(powershell.exe -Command \"Get-Command flutter -ErrorAction SilentlyContinue; where.exe flutter 2>&1\")",
+      "Bash(powershell.exe -Command \"ls 'C:\\\\Users\\\\Asus\\\\AppData\\\\Local\\\\' | Where-Object Name -match 'flutter|dart|android'\")",
+      "Bash(powershell.exe -Command ':*)"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+com.example.campus_swap:style/NormalTheme = 0x7f040001
+com.example.campus_swap:style/LaunchTheme = 0x7f040000
+com.example.campus_swap:color/ic_launcher_background = 0x7f010000
+com.example.campus_swap:mipmap/ic_launcher = 0x7f030000
+com.example.campus_swap:drawable/ic_launcher_background = 0x7f020000
+com.example.campus_swap:drawable/ic_launcher_foreground = 0x7f020001
