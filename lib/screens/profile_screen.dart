@@ -2,14 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../services/product_service.dart';
+import '../models/models.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'edit_profile_screen.dart';
 import 'my_listings_screen.dart';
 import 'settings_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final _productService = ProductService();
+
+  Stream<List<Product>>? get _myListingsStream {
+    final uid = context.read<AuthProvider>().currentUserId;
+    if (uid == null) return null;
+    return _productService.subscribeToMyListings();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,15 +122,24 @@ class ProfileScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.border),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _stat(context, user.activeListings.toString(), 'Active'),
-                Container(width: 1, height: 40, color: AppColors.border),
-                _stat(context, user.soldItems.toString(), 'Sold'),
-                Container(width: 1, height: 40, color: AppColors.border),
-                _stat(context, user.reviews.toString(), 'Reviews'),
-              ],
+            child: StreamBuilder<List<Product>>(
+              stream: _myListingsStream,
+              builder: (context, snapshot) {
+                final listings = snapshot.data ?? const <Product>[];
+                final active = listings.where((p) => !p.isSold && !p.isDraft).length;
+                final sold = listings.where((p) => p.isSold).length;
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _stat(context, active.toString(), 'Active'),
+                    Container(width: 1, height: 40, color: AppColors.border),
+                    _stat(context, sold.toString(), 'Sold'),
+                    Container(width: 1, height: 40, color: AppColors.border),
+                    _stat(context, user.reviews.toString(), 'Reviews'),
+                  ],
+                );
+              },
             ),
           ),
           const SizedBox(height: 20),

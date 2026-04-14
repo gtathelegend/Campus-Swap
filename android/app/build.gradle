@@ -12,6 +12,7 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -42,6 +43,8 @@ flutter {
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+
     // Explicitly add Flutter engine and plugins because the Gradle plugin is failing to resolve them.
     def flutter_engine_version = "1.0.0-425cfb54d01a9472b3e81d9e76fd63a4a44cfbcb"
     debugImplementation "io.flutter:flutter_embedding_debug:$flutter_engine_version"

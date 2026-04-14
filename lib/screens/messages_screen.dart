@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../services/message_service.dart';
 import '../models/models.dart';
@@ -17,15 +18,27 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> {
   final _messageService = MessageService();
   late Future<List<Conversation>> _convFuture;
+  RealtimeChannel? _channel;
   String _query = '';
 
   @override
   void initState() {
     super.initState();
     _convFuture = _messageService.getConversations();
+    // Auto-refresh when any conversation changes (new message, unread flag, etc.)
+    _channel = _messageService.subscribeToConversationChanges(_refresh);
+  }
+
+  @override
+  void dispose() {
+    if (_channel != null) {
+      Supabase.instance.client.removeChannel(_channel!);
+    }
+    super.dispose();
   }
 
   void _refresh() {
+    if (!mounted) return;
     setState(() {
       _convFuture = _messageService.getConversations();
     });

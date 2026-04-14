@@ -151,7 +151,8 @@ class _ChatScreenState extends State<ChatScreen> {
         onReport: () {
           Navigator.pop(context);
           Navigator.push(context,
-              MaterialPageRoute(builder: (_) => const ReportScreen(type: 'user')));
+              MaterialPageRoute(builder: (_) => ReportScreen(
+                  type: 'user', reportedId: widget.seller.id)));
         },
       ),
     );

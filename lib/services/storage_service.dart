@@ -70,6 +70,21 @@ class StorageService {
     return _client.storage.from('avatars').getPublicUrl(fileName);
   }
 
+  /// Upload student ID image for verification. Returns public URL.
+  Future<String> uploadStudentId(XFile file) async {
+    final userId = _client.auth.currentUser?.id ?? 'anonymous';
+    final ext = file.path.split('.').last;
+    final fileName = '$userId/student_id.$ext';
+
+    await _client.storage.from('student-ids').upload(
+          fileName,
+          File(file.path),
+          fileOptions: const FileOptions(upsert: true),
+        );
+
+    return _client.storage.from('student-ids').getPublicUrl(fileName);
+  }
+
   /// Delete a file by its URL path.
   Future<void> deleteFile(String url, {bool isAvatar = false}) async {
     try {

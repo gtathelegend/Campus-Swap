@@ -68,6 +68,16 @@ class ProductService {
     return _parseList(data);
   }
 
+  Stream<List<Product>> subscribeToMyListings() {
+    if (_uid == null) return const Stream.empty();
+    return _client
+        .from('products')
+        .stream(primaryKey: ['id'])
+        .eq('seller_id', _uid!)
+        .order('created_at', ascending: false)
+        .map((rows) => rows.map((row) => Product.fromJson(row)).toList());
+  }
+
   Future<List<Product>> getProductsBySeller(String sellerId) async {
     final data = await _client
         .from('products')

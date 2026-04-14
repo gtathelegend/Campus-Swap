@@ -304,6 +304,45 @@ class Conversation {
   }
 }
 
+class Review {
+  final String id;
+  final String reviewerId;
+  final String reviewerName;
+  final String? reviewerAvatarUrl;
+  final String revieweeId;
+  final String? productId;
+  final int rating;
+  final String? comment;
+  final String createdAt;
+
+  const Review({
+    required this.id,
+    required this.reviewerId,
+    required this.reviewerName,
+    this.reviewerAvatarUrl,
+    required this.revieweeId,
+    this.productId,
+    required this.rating,
+    this.comment,
+    required this.createdAt,
+  });
+
+  factory Review.fromJson(Map<String, dynamic> json) {
+    final reviewer = json['reviewer'] as Map<String, dynamic>?;
+    return Review(
+      id: json['id'] as String,
+      reviewerId: json['reviewer_id'] as String,
+      reviewerName: reviewer?['name'] as String? ?? 'Anonymous',
+      reviewerAvatarUrl: reviewer?['avatar_url'] as String?,
+      revieweeId: json['reviewee_id'] as String,
+      productId: json['product_id'] as String?,
+      rating: json['rating'] as int,
+      comment: json['comment'] as String?,
+      createdAt: _formatRelativeTime(json['created_at'] as String?),
+    );
+  }
+}
+
 class Category {
   final String id;
   final String name;

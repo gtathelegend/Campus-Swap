@@ -72,4 +72,15 @@ class ProfileService {
         .eq('blocker_id', _uid!)
         .eq('blocked_id', targetUserId);
   }
+
+  /// Submit student ID for verification. Upserts into student_verifications table.
+  Future<void> submitStudentVerification(String studentIdUrl) async {
+    if (_uid == null) throw Exception('Not logged in');
+    await _client.from('student_verifications').upsert({
+      'user_id': _uid,
+      'student_id_url': studentIdUrl,
+      'status': 'pending',
+      'submitted_at': DateTime.now().toIso8601String(),
+    });
+  }
 }

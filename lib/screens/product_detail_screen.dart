@@ -198,8 +198,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) =>
-                                const ReportScreen(type: 'listing')));
+                            builder: (_) => ReportScreen(
+                                type: 'listing',
+                                reportedId: widget.product.id)));
                   }
                 },
                 itemBuilder: (_) => [

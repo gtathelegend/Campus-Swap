@@ -12,12 +12,14 @@ class NotificationService {
 
   RealtimeChannel? _messagesChannel;
   RealtimeChannel? _productsChannel;
+  RealtimeChannel? _reviewsChannel;
 
   bool _initialized = false;
   String? _activeUserId;
 
   static const _messagesChannelId = 'messages_channel';
   static const _updatesChannelId = 'updates_channel';
+  static const _reviewsChannelId = 'reviews_channel';
 
   Future<void> startForCurrentUser() async {
     final uid = _client.auth.currentUser?.id;
@@ -60,6 +62,33 @@ class NotificationService {
           },
         )
         .subscribe();
+
+    // Notify when someone leaves a review on our profile
+    _reviewsChannel = _client
+        .channel('notify-reviews-$uid')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'reviews',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'reviewee_id',
+            value: uid,
+          ),
+          callback: (payload) async {
+            final row = payload.newRecord;
+            final rating = row['rating'] as int? ?? 5;
+            final stars = '⭐' * rating;
+            await _show(
+              id: _stableInt('review-${row['id']}'),
+              title: 'New review!',
+              body: '$stars Someone left you a ${rating}-star review.',
+              channelId: _reviewsChannelId,
+              channelName: 'Reviews',
+            );
+          },
+        )
+        .subscribe();
   }
 
   Future<void> stop() async {
@@ -71,6 +100,10 @@ class NotificationService {
       await _client.removeChannel(_productsChannel!);
       _productsChannel = null;
     }
+    if (_reviewsChannel != null) {
+      await _client.removeChannel(_reviewsChannel!);
+      _reviewsChannel = null;
+    }
     _activeUserId = null;
   }
 
@@ -78,9 +111,16 @@ class NotificationService {
     if (_initialized) return;
 
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const settings = InitializationSettings(android: androidInit);
+    const iosInit = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    const settings =
+        InitializationSettings(android: androidInit, iOS: iosInit);
     await _plugin.initialize(settings);
 
+    // Request Android 13+ notification permission
     final androidPlugin = _plugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();

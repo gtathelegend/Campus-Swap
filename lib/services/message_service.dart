@@ -108,6 +108,38 @@ class MessageService {
     }).eq('id', conversationId);
   }
 
+  /// Returns count of conversations where current user has unread messages.
+  Future<int> getUnreadCount() async {
+    if (_uid == null) return 0;
+    final data = await _client
+        .from('conversations')
+        .select('buyer_id, buyer_has_unread, seller_has_unread')
+        .or('buyer_id.eq.$_uid,seller_id.eq.$_uid');
+    int count = 0;
+    for (final row in data as List<dynamic>) {
+      final isBuyer = (row['buyer_id'] as String) == _uid;
+      final unread = isBuyer
+          ? (row['buyer_has_unread'] as bool? ?? false)
+          : (row['seller_has_unread'] as bool? ?? false);
+      if (unread) count++;
+    }
+    return count;
+  }
+
+  /// Subscribe to changes on the conversations table.
+  /// Calls [onUpdate] whenever a row is inserted or updated.
+  RealtimeChannel subscribeToConversationChanges(void Function() onUpdate) {
+    return _client
+        .channel('conversations-${_uid ?? 'anon'}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'conversations',
+          callback: (_) => onUpdate(),
+        )
+        .subscribe();
+  }
+
   // ─── Real-time ────────────────────────────────────────────────────────────────
 
   /// Returns a stream of messages for a conversation.
