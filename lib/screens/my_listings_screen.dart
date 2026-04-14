@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../theme/app_theme.dart';
+import '../services/product_service.dart';
 import '../models/models.dart';
-import '../data/mock_data.dart';
+import '../theme/app_theme.dart';
 import 'listing_detail_screen.dart';
 import 'edit_listing_screen.dart';
 
@@ -13,13 +13,17 @@ class MyListingsScreen extends StatefulWidget {
   State<MyListingsScreen> createState() => _MyListingsScreenState();
 }
 
-class _MyListingsScreenState extends State<MyListingsScreen> with SingleTickerProviderStateMixin {
+class _MyListingsScreenState extends State<MyListingsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final _productService = ProductService();
+  late Future<List<Product>> _listingsFuture;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _listingsFuture = _productService.getMyListings();
   }
 
   @override
@@ -28,9 +32,9 @@ class _MyListingsScreenState extends State<MyListingsScreen> with SingleTickerPr
     super.dispose();
   }
 
-  List<Product> get _activeListings => myListings.where((p) => !p.isSold && !p.isDraft).toList();
-  List<Product> get _soldListings => myListings.where((p) => p.isSold).toList();
-  List<Product> get _draftListings => myListings.where((p) => p.isDraft).toList();
+  void _refresh() {
+    setState(() => _listingsFuture = _productService.getMyListings());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +42,11 @@ class _MyListingsScreenState extends State<MyListingsScreen> with SingleTickerPr
       backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: AppColors.base,
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new, size: 20), onPressed: () => Navigator.pop(context)),
-        title: Text('My Listings', style: Theme.of(context).textTheme.titleLarge),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+            onPressed: () => Navigator.pop(context)),
+        title: Text('My Listings',
+            style: Theme.of(context).textTheme.titleLarge),
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.espresso,
@@ -48,20 +55,51 @@ class _MyListingsScreenState extends State<MyListingsScreen> with SingleTickerPr
           indicatorWeight: 2,
           labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
           unselectedLabelStyle: GoogleFonts.inter(fontSize: 13),
-          tabs: [
-            Tab(text: 'Active (${_activeListings.length})'),
-            Tab(text: 'Sold (${_soldListings.length})'),
-            Tab(text: 'Draft (${_draftListings.length})'),
+          tabs: const [
+            Tab(text: 'Active'),
+            Tab(text: 'Sold'),
+            Tab(text: 'Draft'),
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildListingList(_activeListings),
-          _buildListingList(_soldListings),
-          _buildListingList(_draftListings),
-        ],
+      body: FutureBuilder<List<Product>>(
+        future: _listingsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator(color: AppColors.gold));
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline,
+                      color: AppColors.stone, size: 48),
+                  const SizedBox(height: 16),
+                  Text('Failed to load listings',
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                      onPressed: _refresh, child: const Text('Retry')),
+                ],
+              ),
+            );
+          }
+          final all = snapshot.data ?? [];
+          final active = all.where((p) => !p.isSold && !p.isDraft).toList();
+          final sold = all.where((p) => p.isSold).toList();
+          final draft = all.where((p) => p.isDraft).toList();
+
+          return TabBarView(
+            controller: _tabController,
+            children: [
+              _buildListingList(active),
+              _buildListingList(sold),
+              _buildListingList(draft),
+            ],
+          );
+        },
       ),
     );
   }
@@ -74,24 +112,30 @@ class _MyListingsScreenState extends State<MyListingsScreen> with SingleTickerPr
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.inventory_2_outlined, size: 48, color: AppColors.stone),
+              const Icon(Icons.inventory_2_outlined,
+                  size: 48, color: AppColors.stone),
               const SizedBox(height: 16),
-              Text('No listings here', style: Theme.of(context).textTheme.titleMedium),
+              Text('No listings here',
+                  style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              Text('Your listings will appear here.', style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
+              Text('Your listings will appear here.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center),
             ],
           ),
         ),
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(20),
-      itemCount: items.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (context, i) => _ListingCard(
-        product: items[i],
-        onRefresh: () => setState(() {}),
+    return RefreshIndicator(
+      color: AppColors.gold,
+      onRefresh: () async => _refresh(),
+      child: ListView.separated(
+        padding: const EdgeInsets.all(20),
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) =>
+            _ListingCard(product: items[i], onRefresh: _refresh),
       ),
     );
   }
@@ -105,11 +149,16 @@ class _ListingCard extends StatelessWidget {
 
   String _categoryEmoji(String cat) {
     switch (cat) {
-      case 'Electronics': return '💻';
-      case 'Books & Textbooks': return '📚';
-      case 'Clothing & Accessories': return '👕';
-      case 'Furniture': return '🪑';
-      default: return '📦';
+      case 'Electronics':
+        return '💻';
+      case 'Books & Textbooks':
+        return '📚';
+      case 'Clothing & Accessories':
+        return '👕';
+      case 'Furniture':
+        return '🪑';
+      default:
+        return '📦';
     }
   }
 
@@ -119,7 +168,8 @@ class _ListingCard extends StatelessWidget {
       onTap: () async {
         final result = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => ListingDetailScreen(product: product)),
+          MaterialPageRoute(
+              builder: (_) => ListingDetailScreen(product: product)),
         );
         if (result != null) onRefresh();
       },
@@ -141,7 +191,20 @@ class _ListingCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.border),
               ),
-              child: Center(child: Text(_categoryEmoji(product.category), style: const TextStyle(fontSize: 28))),
+              child: product.imageUrls.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        product.imageUrls.first,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                            child: Text(_categoryEmoji(product.category),
+                                style: const TextStyle(fontSize: 28))),
+                      ),
+                    )
+                  : Center(
+                      child: Text(_categoryEmoji(product.category),
+                          style: const TextStyle(fontSize: 28))),
             ),
             const SizedBox(width: 12),
             // Info
@@ -149,19 +212,35 @@ class _ListingCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.espresso), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(product.name,
+                      style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.espresso),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 2),
-                  Text('\$${product.price.toStringAsFixed(0)}', style: GoogleFonts.manrope(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.gold)),
+                  Text('₹${product.price.toStringAsFixed(0)}',
+                      style: GoogleFonts.manrope(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.gold)),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.visibility_outlined, size: 12, color: AppColors.stone),
+                      const Icon(Icons.visibility_outlined,
+                          size: 12, color: AppColors.stone),
                       const SizedBox(width: 3),
-                      Text('${product.views}', style: GoogleFonts.inter(fontSize: 11, color: AppColors.stone)),
+                      Text('${product.views}',
+                          style: GoogleFonts.inter(
+                              fontSize: 11, color: AppColors.stone)),
                       const SizedBox(width: 8),
-                      Icon(Icons.chat_bubble_outline, size: 12, color: AppColors.stone),
+                      const Icon(Icons.chat_bubble_outline,
+                          size: 12, color: AppColors.stone),
                       const SizedBox(width: 3),
-                      Text('${product.messages}', style: GoogleFonts.inter(fontSize: 11, color: AppColors.stone)),
+                      Text('${product.messages}',
+                          style: GoogleFonts.inter(
+                              fontSize: 11, color: AppColors.stone)),
                     ],
                   ),
                 ],
@@ -176,17 +255,24 @@ class _ListingCard extends StatelessWidget {
                     onTap: () async {
                       final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => EditListingScreen(product: product)),
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                EditListingScreen(product: product)),
                       );
                       if (result == true) onRefresh();
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         border: Border.all(color: AppColors.border),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text('Edit', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.espresso)),
+                      child: Text('Edit',
+                          style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.espresso)),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -194,38 +280,55 @@ class _ListingCard extends StatelessWidget {
                     onTap: () async {
                       final result = await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => ListingDetailScreen(product: product)),
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                ListingDetailScreen(product: product)),
                       );
                       if (result != null) onRefresh();
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppColors.espresso,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text('View', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.base)),
+                      child: Text('View',
+                          style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.base)),
                     ),
                   ),
                 ],
               ),
             if (product.isSold)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF4CAF50).withOpacity(0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text('Sold', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF4CAF50))),
+                child: Text('Sold',
+                    style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF4CAF50))),
               ),
             if (product.isDraft)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.stone.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text('Draft', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.stone)),
+                child: Text('Draft',
+                    style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.stone)),
               ),
           ],
         ),

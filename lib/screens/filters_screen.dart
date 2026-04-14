@@ -87,7 +87,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
                     }).toList(),
                   ),
                   const SizedBox(height: 28),
-                  Text('Max Price: \$${_maxPrice.toInt()}', style: Theme.of(context).textTheme.titleMedium),
+                  Text('Max Price: ₹${_maxPrice.toInt()}', style: Theme.of(context).textTheme.titleMedium),
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       activeTrackColor: AppColors.gold,
@@ -106,8 +106,8 @@ class _FiltersScreenState extends State<FiltersScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('\$100', style: GoogleFonts.inter(color: AppColors.stone, fontSize: 12)),
-                      Text('\$5000', style: GoogleFonts.inter(color: AppColors.stone, fontSize: 12)),
+                      Text('₹100', style: GoogleFonts.inter(color: AppColors.stone, fontSize: 12)),
+                      Text('₹5000', style: GoogleFonts.inter(color: AppColors.stone, fontSize: 12)),
                     ],
                   ),
                   const SizedBox(height: 28),

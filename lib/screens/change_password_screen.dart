@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
+import '../services/auth_service.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -17,6 +18,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _showNew = false;
   bool _showConfirm = false;
   bool _typing = false;
+  bool _loading = false;
+  final _authService = AuthService();
 
   @override
   void dispose() {
@@ -31,11 +34,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       _newController.text.length >= 8 &&
       _newController.text == _confirmController.text;
 
-  void _update() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password updated successfully'), backgroundColor: AppColors.espresso),
-    );
-    Navigator.pop(context);
+  Future<void> _update() async {
+    setState(() => _loading = true);
+    try {
+      await _authService.updatePassword(_newController.text);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password updated successfully'), backgroundColor: AppColors.espresso),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: AppColors.alert),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -96,12 +113,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _canUpdate ? _update : null,
+              onPressed: (_canUpdate && !_loading) ? _update : null,
               style: ElevatedButton.styleFrom(
                 disabledBackgroundColor: AppColors.border,
                 disabledForegroundColor: AppColors.stone,
               ),
-              child: const Text('Update Password'),
+              child: _loading
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Text('Update Password'),
             ),
           ),
           const SizedBox(height: 40),

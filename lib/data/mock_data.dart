@@ -2,6 +2,7 @@ import '../models/models.dart';
 
 // Current logged-in user
 final currentUser = const UserProfile(
+  id: 'me',
   name: 'John Smith',
   email: 'john.smith@university.edu',
   phone: '+1 (555) 000-0000',
@@ -11,7 +12,6 @@ final currentUser = const UserProfile(
   reviews: 14,
   activeListings: 4,
   soldItems: 8,
-  draftListings: 1,
   verified: true,
 );
 
@@ -312,11 +312,12 @@ final conversations = [
     time: '2m',
     hasUnread: true,
     product: products[0],
-    messages: const [
-      Message(id: 'm1', from: 'them', text: "Hi! I'm interested in the MacBook. Is it still available?", time: '10:23 AM'),
-      Message(id: 'm2', from: 'me', text: "Yes, it's still available! Would you like to meet up?", time: '10:25 AM'),
-      Message(id: 'm3', from: 'them', text: 'Perfect! How about tomorrow at the library?', time: '10:26 AM'),
-      Message(id: 'm4', from: 'me', text: 'Sounds good! 2pm work for you?', time: '10:27 AM'),
+    otherUserId: sellers[0].id,
+    messages: [
+      Message(id: 'm1', senderId: sellers[0].id, from: 'them', text: "Hi! I'm interested in the MacBook. Is it still available?", time: '10:23 AM', createdAt: DateTime(2026, 4, 14, 10, 23)),
+      Message(id: 'm2', senderId: 'me', from: 'me', text: "Yes, it's still available! Would you like to meet up?", time: '10:25 AM', createdAt: DateTime(2026, 4, 14, 10, 25)),
+      Message(id: 'm3', senderId: sellers[0].id, from: 'them', text: 'Perfect! How about tomorrow at the library?', time: '10:26 AM', createdAt: DateTime(2026, 4, 14, 10, 26)),
+      Message(id: 'm4', senderId: 'me', from: 'me', text: 'Sounds good! 2pm work for you?', time: '10:27 AM', createdAt: DateTime(2026, 4, 14, 10, 27)),
     ],
   ),
   Conversation(
@@ -326,10 +327,11 @@ final conversations = [
     time: '1h',
     hasUnread: false,
     product: products[1],
-    messages: const [
-      Message(id: 'm5', from: 'them', text: 'Hi! Is the Dell XPS still available?', time: '9:15 AM'),
-      Message(id: 'm6', from: 'me', text: "Yes it is! It's in great condition.", time: '9:20 AM'),
-      Message(id: 'm7', from: 'them', text: 'Can we meet tomorrow?', time: '9:22 AM'),
+    otherUserId: sellers[1].id,
+    messages: [
+      Message(id: 'm5', senderId: sellers[1].id, from: 'them', text: 'Hi! Is the Dell XPS still available?', time: '9:15 AM', createdAt: DateTime(2026, 4, 14, 9, 15)),
+      Message(id: 'm6', senderId: 'me', from: 'me', text: "Yes it is! It's in great condition.", time: '9:20 AM', createdAt: DateTime(2026, 4, 14, 9, 20)),
+      Message(id: 'm7', senderId: sellers[1].id, from: 'them', text: 'Can we meet tomorrow?', time: '9:22 AM', createdAt: DateTime(2026, 4, 14, 9, 22)),
     ],
   ),
   Conversation(
@@ -339,10 +341,11 @@ final conversations = [
     time: '3h',
     hasUnread: false,
     product: products[2],
-    messages: const [
-      Message(id: 'm8', from: 'me', text: 'Hey, interested in the HP Laptop', time: 'Yesterday'),
-      Message(id: 'm9', from: 'them', text: 'Great! When can you meet?', time: 'Yesterday'),
-      Message(id: 'm10', from: 'them', text: 'Thanks for the quick response', time: 'Yesterday'),
+    otherUserId: sellers[2].id,
+    messages: [
+      Message(id: 'm8', senderId: 'me', from: 'me', text: 'Hey, interested in the HP Laptop', time: 'Yesterday', createdAt: DateTime(2026, 4, 13, 18, 10)),
+      Message(id: 'm9', senderId: sellers[2].id, from: 'them', text: 'Great! When can you meet?', time: 'Yesterday', createdAt: DateTime(2026, 4, 13, 18, 20)),
+      Message(id: 'm10', senderId: sellers[2].id, from: 'them', text: 'Thanks for the quick response', time: 'Yesterday', createdAt: DateTime(2026, 4, 13, 18, 30)),
     ],
   ),
   Conversation(
@@ -352,9 +355,10 @@ final conversations = [
     time: '1d',
     hasUnread: true,
     product: products[3],
-    messages: const [
-      Message(id: 'm11', from: 'them', text: 'Is the price negotiable?', time: 'Mon'),
-      Message(id: 'm12', from: 'me', text: "I can do \$850 but that's my lowest.", time: 'Mon'),
+    otherUserId: sellers[3].id,
+    messages: [
+      Message(id: 'm11', senderId: sellers[3].id, from: 'them', text: 'Is the price negotiable?', time: 'Mon', createdAt: DateTime(2026, 4, 13, 9, 0)),
+      Message(id: 'm12', senderId: 'me', from: 'me', text: "I can do \$850 but that's my lowest.", time: 'Mon', createdAt: DateTime(2026, 4, 13, 9, 15)),
     ],
   ),
   Conversation(
@@ -364,10 +368,11 @@ final conversations = [
     time: '2d',
     hasUnread: false,
     product: products[4],
-    messages: const [
-      Message(id: 'm13', from: 'them', text: 'The ThinkPad looks great!', time: 'Sun'),
-      Message(id: 'm14', from: 'me', text: "Thanks! It's in excellent shape.", time: 'Sun'),
-      Message(id: 'm15', from: 'them', text: 'Perfect, see you then!', time: 'Sun'),
+    otherUserId: sellers[4].id,
+    messages: [
+      Message(id: 'm13', senderId: sellers[4].id, from: 'them', text: 'The ThinkPad looks great!', time: 'Sun', createdAt: DateTime(2026, 4, 12, 15, 0)),
+      Message(id: 'm14', senderId: 'me', from: 'me', text: "Thanks! It's in excellent shape.", time: 'Sun', createdAt: DateTime(2026, 4, 12, 15, 8)),
+      Message(id: 'm15', senderId: sellers[4].id, from: 'them', text: 'Perfect, see you then!', time: 'Sun', createdAt: DateTime(2026, 4, 12, 15, 15)),
     ],
   ),
 ];

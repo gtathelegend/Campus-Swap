@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../models/models.dart';
+import '../services/product_service.dart';
 
 class EditListingScreen extends StatefulWidget {
   final Product product;
@@ -19,6 +20,8 @@ class _EditListingScreenState extends State<EditListingScreen> {
   late final TextEditingController _priceController;
   late String _condition;
   late bool _isNegotiable;
+  bool _saving = false;
+  final _productService = ProductService();
 
   static const _conditions = ['New', 'Like New', 'Excellent', 'Good', 'Fair'];
 
@@ -40,11 +43,39 @@ class _EditListingScreenState extends State<EditListingScreen> {
     super.dispose();
   }
 
-  void _save() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Listing updated successfully'), backgroundColor: AppColors.espresso),
-    );
-    Navigator.pop(context, true);
+  Future<void> _save() async {
+    final price = double.tryParse(_priceController.text.trim());
+    if (price == null || _titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in title and price'), backgroundColor: AppColors.alert),
+      );
+      return;
+    }
+    setState(() => _saving = true);
+    try {
+      await _productService.updateProduct(
+        widget.product.id,
+        name: _titleController.text.trim(),
+        description: _descController.text.trim(),
+        price: price,
+        condition: _condition,
+        isNegotiable: _isNegotiable,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Listing updated successfully'), backgroundColor: AppColors.espresso),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update listing'), backgroundColor: AppColors.alert),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   @override
@@ -57,8 +88,10 @@ class _EditListingScreenState extends State<EditListingScreen> {
         title: Text('Edit Listing', style: Theme.of(context).textTheme.titleLarge),
         actions: [
           TextButton(
-            onPressed: _save,
-            child: Text('Save', style: GoogleFonts.inter(color: AppColors.gold, fontSize: 14, fontWeight: FontWeight.w600)),
+            onPressed: _saving ? null : _save,
+            child: _saving
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.gold))
+                : Text('Save', style: GoogleFonts.inter(color: AppColors.gold, fontSize: 14, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -81,7 +114,7 @@ class _EditListingScreenState extends State<EditListingScreen> {
             controller: _priceController,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: const InputDecoration(prefixText: '\$ '),
+            decoration: const InputDecoration(prefixText: '₹ '),
           ),
           const SizedBox(height: 20),
 
@@ -139,8 +172,10 @@ class _EditListingScreenState extends State<EditListingScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _save,
-              child: const Text('Save Changes'),
+              onPressed: _saving ? null : _save,
+              child: _saving
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Text('Save Changes'),
             ),
           ),
           const SizedBox(height: 40),

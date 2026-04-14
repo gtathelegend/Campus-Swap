@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../models/models.dart';
-import '../data/mock_data.dart';
+import '../services/product_service.dart';
 import 'edit_listing_screen.dart';
 
 class ListingDetailScreen extends StatefulWidget {
@@ -16,6 +16,7 @@ class ListingDetailScreen extends StatefulWidget {
 
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
   late Product _product;
+  final _productService = ProductService();
 
   @override
   void initState() {
@@ -38,12 +39,23 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
       context: context,
       builder: (_) => _MarkAsSoldDialog(
         product: _product,
-        onConfirm: () {
+        onConfirm: () async {
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Listing marked as sold!'), backgroundColor: AppColors.espresso),
-          );
-          Navigator.pop(context, 'sold');
+          try {
+            await _productService.markAsSold(_product.id);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Listing marked as sold!'), backgroundColor: AppColors.espresso),
+              );
+              Navigator.pop(context, 'sold');
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Failed to update listing'), backgroundColor: AppColors.alert),
+              );
+            }
+          }
         },
       ),
     );
@@ -54,14 +66,23 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
       context: context,
       builder: (_) => _DeleteListingDialog(
         product: _product,
-        onConfirm: () {
+        onConfirm: () async {
           Navigator.pop(context);
-          final idx = myListings.indexWhere((p) => p.id == _product.id);
-          if (idx != -1) myListings.removeAt(idx);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Listing deleted'), backgroundColor: AppColors.alert),
-          );
-          Navigator.pop(context, 'deleted');
+          try {
+            await _productService.deleteProduct(_product.id);
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Listing deleted'), backgroundColor: AppColors.alert),
+              );
+              Navigator.pop(context, 'deleted');
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Failed to delete listing'), backgroundColor: AppColors.alert),
+              );
+            }
+          }
         },
       ),
     );
@@ -92,21 +113,31 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image
-            Container(
-              width: double.infinity,
-              height: 180,
-              decoration: BoxDecoration(
-                color: AppColors.cream,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: double.infinity,
+                height: 180,
+                decoration: BoxDecoration(
+                  color: AppColors.cream,
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: _product.imageUrls.isNotEmpty
+                    ? Image.network(
+                        _product.imageUrls.first,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                            child: Text(_categoryEmoji(_product.category),
+                                style: const TextStyle(fontSize: 60))),
+                      )
+                    : Center(child: Text(_categoryEmoji(_product.category), style: const TextStyle(fontSize: 60))),
               ),
-              child: Center(child: Text(_categoryEmoji(_product.category), style: const TextStyle(fontSize: 60))),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(child: Text(_product.name, style: Theme.of(context).textTheme.titleLarge)),
-                Text('\$${_product.price.toStringAsFixed(0)}', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.espresso)),
+                Text('₹${_product.price.toStringAsFixed(0)}', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.espresso)),
               ],
             ),
             const SizedBox(height: 4),
@@ -241,7 +272,7 @@ class _MarkAsSoldDialog extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(product.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.espresso)),
-                        Text('\$${product.price.toStringAsFixed(0)}', style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.gold)),
+                        Text('₹${product.price.toStringAsFixed(0)}', style: GoogleFonts.manrope(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.gold)),
                       ],
                     ),
                   ),
@@ -322,7 +353,7 @@ class _DeleteListingDialog extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(product.name, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.espresso)),
-                        Text('\$${product.price.toStringAsFixed(0)} · ${product.views} views · ${product.messages} messages', style: GoogleFonts.inter(fontSize: 12, color: AppColors.stone)),
+                        Text('₹${product.price.toStringAsFixed(0)} · ${product.views} views · ${product.messages} msgs', style: GoogleFonts.inter(fontSize: 12, color: AppColors.stone)),
                       ],
                     ),
                   ),

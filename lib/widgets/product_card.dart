@@ -13,8 +13,31 @@ class ProductCard extends StatelessWidget {
     return AppColors.conditionColors[product.condition] ?? AppColors.stone;
   }
 
+  String _categoryEmoji() {
+    switch (product.category) {
+      case 'Electronics':
+        return '💻';
+      case 'Books & Textbooks':
+        return '📚';
+      case 'Clothing & Accessories':
+        return '👕';
+      case 'Furniture':
+        return '🪑';
+      case 'Sports & Outdoors':
+        return '⚽';
+      case 'Kitchen & Dining':
+        return '🍴';
+      case 'Home Decor':
+        return '🏠';
+      default:
+        return '📦';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasImage = product.imageUrls.isNotEmpty;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -33,18 +56,30 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image placeholder
-            Container(
-              height: 120,
-              decoration: BoxDecoration(
-                color: AppColors.cream,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-              ),
-              child: Center(
-                child: Text(
-                  _categoryEmoji(),
-                  style: const TextStyle(fontSize: 40),
-                ),
+            // Image area
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
+              child: SizedBox(
+                height: 120,
+                width: double.infinity,
+                child: hasImage
+                    ? Image.network(
+                        product.imageUrls.first,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _emojiPlaceholder(),
+                        loadingBuilder: (_, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: AppColors.cream,
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: AppColors.gold),
+                            ),
+                          );
+                        },
+                      )
+                    : _emojiPlaceholder(),
               ),
             ),
             Padding(
@@ -75,7 +110,8 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: _conditionColor().withOpacity(0.12),
                           borderRadius: BorderRadius.circular(4),
@@ -100,14 +136,15 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  String _categoryEmoji() {
-    switch (product.category) {
-      case 'Books': return '📚';
-      case 'Tech': return '💻';
-      case 'Fashion': return '👕';
-      case 'Bikes': return '🚲';
-      case 'Furniture': return '🪑';
-      default: return '📦';
-    }
+  Widget _emojiPlaceholder() {
+    return Container(
+      color: AppColors.cream,
+      child: Center(
+        child: Text(
+          _categoryEmoji(),
+          style: const TextStyle(fontSize: 40),
+        ),
+      ),
+    );
   }
 }
