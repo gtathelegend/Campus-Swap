@@ -6,6 +6,7 @@ import '../services/product_service.dart';
 import '../services/review_service.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 import '../widgets/product_card.dart';
 import 'product_detail_screen.dart';
 import 'report_screen.dart';
@@ -71,6 +72,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
+        title: BrandTitle(seller.name),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),

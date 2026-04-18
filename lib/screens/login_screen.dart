@@ -82,11 +82,34 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 40),
-              Text('Welcome back',
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Campus Swap',
+                    style: GoogleFonts.manrope(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.espresso,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Text('Welcome Back',
                   style: Theme.of(context).textTheme.displayLarge),
               const SizedBox(height: 8),
-              Text('Sign in to your account',
+              Text('Login to your account',
                   style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 40),
               Text('Email',
@@ -161,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 18,
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white))
-                      : const Text('Log In'),
+                      : const Text('Login'),
                 ),
               ),
               const SizedBox(height: 16),

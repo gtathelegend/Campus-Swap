@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../services/message_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 import '../models/models.dart';
 import 'seller_profile_screen.dart';
 import 'product_detail_screen.dart';
@@ -178,6 +179,13 @@ class _ChatScreenState extends State<ChatScreen> {
                       SellerProfileScreen(seller: widget.seller))),
           child: Row(
             children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 22,
+                height: 22,
+                fit: BoxFit.cover,
+              ),
+              const SizedBox(width: 8),
               _avatarWidget(widget.seller, size: 36),
               const SizedBox(width: 10),
               Column(

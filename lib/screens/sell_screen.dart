@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/brand_title.dart';
 import '../theme/app_theme.dart';
 import '../data/mock_data.dart';
 
@@ -38,7 +39,7 @@ class _SellScreenState extends State<SellScreen> {
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
-        title: Text('List an Item', style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('List an Item'),
       ),
       body: SafeArea(
         child: ListView(

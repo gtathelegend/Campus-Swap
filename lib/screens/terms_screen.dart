@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/brand_title.dart';
 import '../theme/app_theme.dart';
 
 class TermsScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class TermsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.base,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new, size: 20), onPressed: () => Navigator.pop(context)),
-        title: Text('Terms of Service', style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Terms of Service'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),

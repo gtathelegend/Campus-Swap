@@ -48,22 +48,20 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.espresso,
+      backgroundColor: AppColors.cream,
       body: FadeTransition(
         opacity: _fade,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.gold,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Center(
-                  child: Text('🔄', style: TextStyle(fontSize: 40)),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(height: 20),
@@ -72,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen>
                 style: GoogleFonts.manrope(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.base,
+                  color: AppColors.espresso,
                 ),
               ),
               const SizedBox(height: 8),

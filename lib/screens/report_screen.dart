@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/report_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 
 class ReportScreen extends StatefulWidget {
   final String type; // 'listing' or 'user'
@@ -116,9 +117,8 @@ class _ReportScreenState extends State<ReportScreen> {
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
-        title: Text(
-            'Report ${widget.type == 'listing' ? 'Listing' : 'User'}',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: BrandTitle(
+            'Report ${widget.type == 'listing' ? 'Listing' : 'User'}'),
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
             onPressed: () => Navigator.pop(context)),

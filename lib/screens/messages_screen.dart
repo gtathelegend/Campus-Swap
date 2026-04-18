@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../services/message_service.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 import 'chat_screen.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -50,7 +51,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: AppColors.base,
-        title: Text('Messages', style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Messages'),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(

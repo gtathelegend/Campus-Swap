@@ -60,26 +60,53 @@ class ProductCard extends StatelessWidget {
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(12)),
-              child: SizedBox(
-                height: 120,
-                width: double.infinity,
-                child: hasImage
-                    ? Image.network(
-                        product.imageUrls.first,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _emojiPlaceholder(),
-                        loadingBuilder: (_, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            color: AppColors.cream,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: AppColors.gold),
+              child: Stack(
+                children: [
+                  SizedBox(
+                    height: 120,
+                    width: double.infinity,
+                    child: hasImage
+                        ? Image.network(
+                            product.imageUrls.first,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _emojiPlaceholder(),
+                            loadingBuilder: (_, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                color: AppColors.cream,
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: AppColors.gold),
+                                ),
+                              );
+                            },
+                          )
+                        : _emojiPlaceholder(),
+                  ),
+                  if (product.isSold)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.45),
+                        ),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: AppColors.alert,
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                          );
-                        },
-                      )
-                    : _emojiPlaceholder(),
+                            child: Text('Sold',
+                                style: GoogleFonts.manrope(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white)),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(

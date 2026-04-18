@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/product_service.dart';
 import '../models/models.dart';
+import '../widgets/brand_title.dart';
 import '../theme/app_theme.dart';
 import 'listing_detail_screen.dart';
 import 'edit_listing_screen.dart';
@@ -45,8 +46,7 @@ class _MyListingsScreenState extends State<MyListingsScreen>
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
             onPressed: () => Navigator.pop(context)),
-        title: Text('My Listings',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('My Listings'),
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.espresso,

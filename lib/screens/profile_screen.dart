@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../services/product_service.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 import 'login_screen.dart';
 import 'edit_profile_screen.dart';
 import 'my_listings_screen.dart';
@@ -42,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppColors.cream,
       appBar: AppBar(
         backgroundColor: AppColors.base,
-        title: Text('Profile', style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Profile'),
         automaticallyImplyLeading: false,
       ),
       body: ListView(

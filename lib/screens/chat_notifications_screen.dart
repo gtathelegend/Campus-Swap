@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/preference_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 
 class ChatNotificationsScreen extends StatefulWidget {
   const ChatNotificationsScreen({super.key});
@@ -124,8 +125,7 @@ class _ChatNotificationsScreenState extends State<ChatNotificationsScreen> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
             onPressed: () => Navigator.pop(context)),
-        title: Text('Chat Notifications',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Chat Notifications'),
       ),
       body: _loading
           ? const Center(

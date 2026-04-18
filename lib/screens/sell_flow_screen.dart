@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../widgets/brand_title.dart';
 import '../services/product_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -16,7 +17,7 @@ class SellFlowScreen extends StatefulWidget {
 
 class _SellFlowScreenState extends State<SellFlowScreen> {
   int _step = 0;
-  static const int _totalSteps = 9;
+  static const int _totalSteps = 8;
 
   final _productService = ProductService();
   final _storageService = StorageService();
@@ -114,9 +115,9 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
       case 1:
         return 'Item Details';
       case 2:
-        return 'Category';
+        return 'Choose Category';
       case 3:
-        return 'Condition';
+        return 'Item Condition';
       case 4:
         return 'Set Price';
       case 5:
@@ -124,8 +125,6 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
       case 6:
         return 'Pickup Location';
       case 7:
-        return 'Confirm Location';
-      case 8:
         return 'Preview';
       default:
         return '';
@@ -152,8 +151,6 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
         return _location != null;
       case 7:
         return true;
-      case 8:
-        return true;
       default:
         return false;
     }
@@ -171,8 +168,7 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: _back,
         ),
-        title:
-            Text(_stepTitle, style: Theme.of(context).textTheme.titleLarge),
+        title: BrandTitle(_stepTitle),
         actions: _step == 1
             ? [
                 TextButton(
@@ -227,8 +223,6 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
       case 6:
         return _buildPickupLocation();
       case 7:
-        return _buildConfirmLocation();
-      case 8:
         return _buildPreview();
       default:
         return const SizedBox();
@@ -243,7 +237,7 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Add up to 8 photos',
+          Text('Add up to 6 photos',
               style: GoogleFonts.inter(fontSize: 14, color: AppColors.stone)),
           const SizedBox(height: 16),
           GridView.builder(
@@ -254,11 +248,11 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
-            itemCount: 8,
+            itemCount: 6,
             itemBuilder: (context, i) {
               if (i < _photos.length) {
                 return _photoSlotFilled(i);
-              } else if (i == _photos.length && _photos.length < 8) {
+              } else if (i == _photos.length && _photos.length < 6) {
                 return _photoSlotAdd();
               } else {
                 return _photoSlotEmpty();
@@ -375,7 +369,7 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
                 final files = await _storageService.pickMultipleImages();
                 if (mounted && files.isNotEmpty) {
                   setState(() {
-                    _photos.addAll(files.take(8 - _photos.length));
+                    _photos.addAll(files.take(6 - _photos.length));
                   });
                 }
               },
@@ -446,50 +440,53 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
           child: Text('Select a category for your item',
-              style:
-                  GoogleFonts.inter(fontSize: 14, color: AppColors.stone)),
+              style: GoogleFonts.inter(fontSize: 14, color: AppColors.stone)),
         ),
         Expanded(
-          child: ListView.separated(
+          child: GridView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.6,
+            ),
             itemCount: sellCategories.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, i) {
               final cat = sellCategories[i];
               final selected = _category == cat.name;
               return GestureDetector(
                 onTap: () => setState(() => _category = cat.name),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 16),
                   decoration: BoxDecoration(
-                    color: selected ? AppColors.espresso : AppColors.base,
+                    color: selected
+                        ? AppColors.gold.withValues(alpha: 0.15)
+                        : AppColors.base,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: selected
-                            ? AppColors.espresso
-                            : AppColors.border),
+                      color: selected ? AppColors.gold : AppColors.border,
+                      width: selected ? 1.5 : 1,
+                    ),
                   ),
-                  child: Row(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(cat.emoji,
-                          style: const TextStyle(fontSize: 22)),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          cat.name,
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: selected
-                                ? AppColors.base
-                                : AppColors.espresso,
-                          ),
+                          style: const TextStyle(fontSize: 28)),
+                      const SizedBox(height: 8),
+                      Text(
+                        cat.name,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: selected
+                              ? AppColors.espresso
+                              : AppColors.mocha,
                         ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      if (selected)
-                        const Icon(Icons.check,
-                            color: AppColors.base, size: 20),
                     ],
                   ),
                 ),
@@ -527,12 +524,14 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: selected ? AppColors.espresso : AppColors.base,
+                    color: selected
+                        ? AppColors.gold.withValues(alpha: 0.15)
+                        : AppColors.base,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: selected
-                            ? AppColors.espresso
-                            : AppColors.border),
+                      color: selected ? AppColors.gold : AppColors.border,
+                      width: selected ? 1.5 : 1,
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -544,17 +543,13 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
                                 style: GoogleFonts.inter(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: selected
-                                      ? AppColors.base
-                                      : AppColors.espresso,
+                                  color: AppColors.espresso,
                                 )),
                             const SizedBox(height: 2),
                             Text(desc,
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
-                                  color: selected
-                                      ? AppColors.base.withOpacity(0.7)
-                                      : AppColors.stone,
+                                  color: AppColors.stone,
                                 )),
                           ],
                         ),
@@ -565,13 +560,10 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color:
-                                selected ? AppColors.gold : AppColors.border,
+                            color: selected ? AppColors.gold : AppColors.border,
                             width: 2,
                           ),
-                          color: selected
-                              ? AppColors.gold
-                              : Colors.transparent,
+                          color: selected ? AppColors.gold : Colors.transparent,
                         ),
                         child: selected
                             ? const Icon(Icons.check,
@@ -753,88 +745,14 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
   // ─── Step 6: Pickup Location ───────────────────────────────────────────────
 
   Widget _buildPickupLocation() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Text('Where can buyers pick up the item?',
-              style:
-                  GoogleFonts.inter(fontSize: 14, color: AppColors.stone)),
-        ),
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: campusLocations.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (context, i) {
-              final loc = campusLocations[i];
-              final selected = _location == loc;
-              final isCustom = loc == 'Custom Location';
-              return GestureDetector(
-                onTap: () => setState(() => _location = loc),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: selected ? AppColors.espresso : AppColors.base,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: selected
-                            ? AppColors.espresso
-                            : AppColors.border),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        isCustom
-                            ? Icons.edit_location_alt_outlined
-                            : Icons.location_on_outlined,
-                        color: selected ? AppColors.base : AppColors.stone,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(loc,
-                            style: GoogleFonts.inter(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: selected
-                                  ? AppColors.base
-                                  : AppColors.espresso,
-                            )),
-                      ),
-                      if (selected)
-                        const Icon(Icons.check,
-                            color: AppColors.base, size: 20),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ─── Step 7: Confirm Location ──────────────────────────────────────────────
-
-  Widget _buildConfirmLocation() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-            child: Text('Verify your pickup location',
-                style: GoogleFonts.inter(
-                    fontSize: 14, color: AppColors.stone)),
-          ),
-          const SizedBox(height: 16),
+          // Map preview
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            height: 220,
+            margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+            height: 180,
             decoration: BoxDecoration(
               color: const Color(0xFFE8EAD8),
               borderRadius: BorderRadius.circular(16),
@@ -842,21 +760,23 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
             ),
             child: Stack(
               children: [
-                CustomPaint(
-                    painter: _MapGridPainter(),
-                    size: const Size(double.infinity, 220)),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: CustomPaint(
+                      painter: _MapGridPainter(),
+                      size: const Size(double.infinity, 180)),
+                ),
                 Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 36,
+                        height: 36,
                         decoration: const BoxDecoration(
-                            color: AppColors.gold,
-                            shape: BoxShape.circle),
+                            color: AppColors.gold, shape: BoxShape.circle),
                         child: const Icon(Icons.location_on,
-                            color: AppColors.espresso, size: 22),
+                            color: AppColors.espresso, size: 20),
                       ),
                       CustomPaint(
                         painter: _PinTailPainter(),
@@ -868,52 +788,73 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
           Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+            child: Text('Select pickup area',
+                style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.espresso)),
+          ),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.base,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.gold.withOpacity(0.15),
-                      shape: BoxShape.circle,
+            itemCount: campusLocations.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (context, i) {
+              final loc = campusLocations[i];
+              final selected = _location == loc;
+              return GestureDetector(
+                onTap: () => setState(() => _location = loc),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: AppColors.base,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: selected ? AppColors.gold : AppColors.border,
+                      width: selected ? 1.5 : 1,
                     ),
-                    child: const Icon(Icons.location_on,
-                        color: AppColors.gold, size: 20),
                   ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      Text(_location ?? 'No location selected',
-                          style: GoogleFonts.inter(
+                      Radio<String>(
+                        value: loc,
+                        groupValue: _location,
+                        onChanged: (v) =>
+                            setState(() => _location = v),
+                        activeColor: AppColors.gold,
+                        materialTapTargetSize:
+                            MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.location_on_outlined,
+                          color: AppColors.stone, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(loc,
+                            style: GoogleFonts.inter(
                               fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.espresso)),
-                      Text('Campus pickup location',
-                          style: GoogleFonts.inter(
-                              fontSize: 12, color: AppColors.stone)),
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.espresso,
+                            )),
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  // ─── Step 8: Preview ───────────────────────────────────────────────────────
+  // ─── Step 7: Preview ───────────────────────────────────────────────────────
 
   Widget _buildPreview() {
     return SingleChildScrollView(
@@ -1038,7 +979,7 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
-          icon: _step == 8
+          icon: _step == 7
               ? _isPublishing
                   ? const SizedBox(
                       height: 18,
@@ -1047,7 +988,7 @@ class _SellFlowScreenState extends State<SellFlowScreen> {
                           strokeWidth: 2, color: Colors.white))
                   : const Icon(Icons.public, size: 18)
               : const SizedBox.shrink(),
-          label: Text(_step == 8 ? 'Publish Listing' : 'Continue'),
+          label: Text(_step == 7 ? 'Publish Listing' : 'Continue'),
           onPressed: (_canContinue && !_isPublishing) ? _next : null,
           style: ElevatedButton.styleFrom(
             disabledBackgroundColor: AppColors.border,

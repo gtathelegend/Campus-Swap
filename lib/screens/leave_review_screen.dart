@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/models.dart';
 import '../services/review_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 
 class LeaveReviewScreen extends StatefulWidget {
   final Seller seller;
@@ -81,8 +82,7 @@ class _LeaveReviewScreenState extends State<LeaveReviewScreen> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
             onPressed: () => Navigator.pop(context)),
-        title: Text(isEditing ? 'Edit Review' : 'Leave a Review',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: BrandTitle(isEditing ? 'Edit Review' : 'Leave a Review'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),

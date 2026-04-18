@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/brand_title.dart';
 import '../services/preference_service.dart';
 import '../theme/app_theme.dart';
 
@@ -97,8 +98,7 @@ class _PushNotificationsScreenState extends State<PushNotificationsScreen> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
             onPressed: () => Navigator.pop(context)),
-        title: Text('Push Notifications',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Push Notifications'),
       ),
       body: _loading
           ? const Center(

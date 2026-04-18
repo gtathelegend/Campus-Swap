@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/brand_title.dart';
 import '../theme/app_theme.dart';
 import '../data/mock_data.dart';
 
@@ -34,7 +35,7 @@ class _FiltersScreenState extends State<FiltersScreen> {
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
-        title: Text('Filters', style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Filters'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),

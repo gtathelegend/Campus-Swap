@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/brand_title.dart';
 import '../services/profile_service.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
@@ -81,8 +82,7 @@ class _BlockedUsersScreenState extends State<BlockedUsersScreen> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
             onPressed: () => Navigator.pop(context)),
-        title: Text('Blocked Users',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Blocked Users'),
       ),
       body: FutureBuilder<List<BlockedUser>>(
         future: _blockedFuture,

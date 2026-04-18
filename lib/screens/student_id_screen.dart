@@ -3,8 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/storage_service.dart';
 import '../services/profile_service.dart';
+import '../widgets/brand_title.dart';
 import '../theme/app_theme.dart';
-import 'success_screen.dart';
+import 'main_screen.dart';
 
 class StudentIdScreen extends StatefulWidget {
   const StudentIdScreen({super.key});
@@ -85,6 +86,23 @@ class _StudentIdScreenState extends State<StudentIdScreen> {
     );
   }
 
+  String _friendlyError(String raw) {
+    final msg = raw.toLowerCase();
+    if (msg.contains('bucket not found') || msg.contains('student-ids')) {
+      return 'Storage bucket "student-ids" not found. Create it in Supabase Storage.';
+    }
+    if (msg.contains('not logged in') || msg.contains('null')) {
+      return 'Session expired. Please log in again.';
+    }
+    if (msg.contains('student_verifications')) {
+      return 'Database table missing. Run the SQL setup for student_verifications.';
+    }
+    if (msg.contains('row-level security') || msg.contains('rls') || msg.contains('403')) {
+      return 'Permission denied. Check Storage RLS policies for the student-ids bucket.';
+    }
+    return 'Upload failed: $raw';
+  }
+
   Future<void> _submit() async {
     if (_file == null) {
       setState(() => _error = 'Please select your student ID first.');
@@ -98,12 +116,12 @@ class _StudentIdScreenState extends State<StudentIdScreen> {
       final url = await _storage.uploadStudentId(_file!);
       await _profileService.submitStudentVerification(url);
       if (mounted) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (_) => const SuccessScreen()));
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const MainScreen()), (_) => false);
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = 'Upload failed. Please try again.');
+        setState(() => _error = _friendlyError(e.toString()));
       }
     } finally {
       if (mounted) setState(() => _uploading = false);
@@ -122,6 +140,7 @@ class _StudentIdScreenState extends State<StudentIdScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        title: const BrandTitle('Verify ID'),
       ),
       body: SafeArea(
         child: Padding(
@@ -245,14 +264,14 @@ class _StudentIdScreenState extends State<StudentIdScreen> {
                           width: 20,
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: Colors.white))
-                      : const Text('Submit for Verification'),
+                      : const Text('Continue'),
                 ),
               ),
               const SizedBox(height: 12),
               Center(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (_) => const SuccessScreen())),
+                  onTap: () => Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const MainScreen()), (_) => false),
                   child: Text('Skip for now',
                       style: GoogleFonts.inter(
                           color: AppColors.mocha,

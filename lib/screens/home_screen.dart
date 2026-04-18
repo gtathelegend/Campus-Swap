@@ -6,6 +6,7 @@ import '../services/product_service.dart';
 import '../models/models.dart';
 import '../data/mock_data.dart' show categories;
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 import '../widgets/product_card.dart';
 import 'search_screen.dart';
 import 'category_screen.dart';
@@ -57,8 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Campus Swap',
-                          style: Theme.of(context).textTheme.displayMedium),
+                      const BrandTitle('Campus Swap', logoSize: 30),
                       GestureDetector(
                         onTap: () => Navigator.push(context,
                             MaterialPageRoute(builder: (_) => const ProfileScreen())),
@@ -132,14 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: Theme.of(context).textTheme.titleMedium),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 90,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                    itemCount: categories.length,
-                    itemBuilder: (context, i) {
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, i) {
                       final cat = categories[i];
                       return GestureDetector(
                         onTap: () => Navigator.push(
@@ -147,33 +144,41 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                                 builder: (_) =>
                                     CategoryScreen(category: cat.name))),
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: 52,
-                                height: 52,
-                                decoration: BoxDecoration(
-                                  color: AppColors.base,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: AppColors.border),
-                                ),
-                                child: Center(
-                                    child: Text(cat.emoji,
-                                        style:
-                                            const TextStyle(fontSize: 24))),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 52,
+                              height: 52,
+                              decoration: BoxDecoration(
+                                color: AppColors.base,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.border),
                               ),
-                              const SizedBox(height: 6),
-                              Text(cat.name,
-                                  style: GoogleFonts.inter(
-                                      fontSize: 11,
-                                      color: AppColors.mocha)),
-                            ],
-                          ),
+                              child: Center(
+                                  child: Text(cat.emoji,
+                                      style: const TextStyle(fontSize: 24))),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              cat.name,
+                              style: GoogleFonts.inter(
+                                  fontSize: 10, color: AppColors.mocha),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       );
                     },
+                    childCount: categories.length,
+                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 0.85,
                   ),
                 ),
               ),

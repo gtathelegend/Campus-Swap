@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/brand_title.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
-import 'main_screen.dart';
+import 'student_id_screen.dart';
 
 class VerifyScreen extends StatefulWidget {
   final String email;
@@ -67,7 +68,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
       await _authService.verifyOtp(email: widget.email, token: otp);
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const MainScreen()),
+          MaterialPageRoute(builder: (_) => const StudentIdScreen()),
           (_) => false,
         );
       }
@@ -134,6 +135,7 @@ class _VerifyScreenState extends State<VerifyScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        title: const BrandTitle('Verify email'),
       ),
       body: SafeArea(
         child: Padding(

@@ -164,6 +164,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
             actions: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 22,
+                    height: 22,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
               if (!isOwner)
                 GestureDetector(
                   onTap: _toggleSave,

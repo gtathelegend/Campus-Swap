@@ -3,6 +3,7 @@ import '../services/product_service.dart';
 import '../models/models.dart';
 import '../data/mock_data.dart' show categories;
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 import '../widgets/product_card.dart';
 import 'product_detail_screen.dart';
 
@@ -36,7 +37,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return Scaffold(
       backgroundColor: AppColors.cream,
       appBar: AppBar(
-        title: Text('$emoji  ${widget.category}'),
+        title: BrandTitle('$emoji  ${widget.category}'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),

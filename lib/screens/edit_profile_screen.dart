@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../services/profile_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/brand_title.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -136,8 +137,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
             onPressed: () => Navigator.pop(context)),
-        title: Text('Edit Profile',
-            style: Theme.of(context).textTheme.titleLarge),
+        title: const BrandTitle('Edit Profile'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../widgets/brand_title.dart';
 import '../theme/app_theme.dart';
 import 'verify_screen.dart';
 import 'main_screen.dart';
@@ -116,6 +117,7 @@ class _SignupScreenState extends State<SignupScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        title: const BrandTitle('Campus Swap'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -123,10 +125,10 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Create account',
+              Text('Create Account',
                   style: Theme.of(context).textTheme.displayLarge),
               const SizedBox(height: 8),
-              Text('Join the campus marketplace',
+              Text('Join Campus Swap',
                   style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 32),
               _label('Full Name'),
