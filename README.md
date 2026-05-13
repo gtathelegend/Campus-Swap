@@ -1,14 +1,25 @@
-# Campus Swap
+# Campus Swap 🚀
 
-A student-to-student second-hand marketplace mobile app built with Flutter and Supabase. Campus Swap lets university students buy, sell, and trade used items — textbooks, electronics, furniture, clothing — directly on campus.
+A privacy-first, student-only marketplace built for campus communities.
+
+> Buy, sell, and trade items locally — no shipping, no strangers, no fees.
+
+📱 Built with Flutter + Supabase  
+⚡ Real-time messaging  
+🔐 OTP-based authentication  
+🎯 Designed for college ecosystems
 
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Why Campus Swap?](#why-campus-swap)
+- [Key Highlights](#key-highlights)
 - [Features](#features)
 - [Screenshots](#screenshots)
+- [Challenges & Learnings](#challenges--learnings)
+- [Future Improvements](#future-improvements)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Project Structure](#project-structure)
@@ -23,7 +34,7 @@ A student-to-student second-hand marketplace mobile app built with Flutter and S
 
 Campus Swap solves a common student problem: what do you do with your textbooks, furniture, and gear at the end of a semester? Instead of discarding or hauling them home, students can list items for sale and connect with buyers on campus — no shipping, no strangers, no fees.
 
-Key highlights:
+Core features:
 
 - Real-time in-app messaging between buyers and sellers
 - OTP-based email verification for student authenticity
@@ -31,6 +42,25 @@ Key highlights:
 - Category and filter-based product discovery
 - Star ratings and reviews for sellers
 - User blocking and content reporting for community safety
+
+---
+
+## 💡 Why Campus Swap?
+
+- Reduces waste by promoting reuse
+- Helps students save money
+- Builds a trusted campus-only economy
+- Eliminates risks of public marketplaces
+
+---
+
+## ⭐ Key Highlights
+
+- Built 35+ Flutter screens with clean architecture
+- Implemented real-time chat using Supabase subscriptions
+- Designed scalable backend with PostgreSQL schema
+- Developed full authentication flow with OTP verification
+- Integrated image upload with compression & storage
 
 ---
 
@@ -70,6 +100,33 @@ Key highlights:
 ### Moderation
 - Report users or content
 - Block users (hides their listings and messages)
+
+---
+
+## 📸 Screenshots
+
+| Home Feed | Listing Detail | Chat |
+|---|---|---|
+| ![](assets/home.png) | ![](assets/detail.png) | ![](assets/chat.png) |
+
+---
+
+## 🧠 Challenges & Learnings
+
+- Handling real-time updates without performance issues
+- Designing scalable database relationships (products, conversations)
+- Managing state efficiently using Provider
+- Implementing secure authentication with OTP flows
+
+---
+
+## 🚀 Future Improvements
+
+- AI-based price recommendation system
+- Smart search with semantic matching
+- In-app payments integration
+- Campus verification using university emails
+- Recommendation engine for listings
 
 ---
 
